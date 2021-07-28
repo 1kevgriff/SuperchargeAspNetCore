@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +19,11 @@ namespace _1_HealthChecks
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpClient<IsWebsiteUpCheck>();
-            services.AddHealthChecks().AddCheck<IsWebsiteUpCheck>("is_website_up");
+
+            services
+                .AddHealthChecks()
+                .AddSqlServer("Server=.;Database=demoDatabase;Trusted_Connection=True;")
+                .AddCheck<IsWebsiteUpCheck>("is_website_up");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,7 +42,12 @@ namespace _1_HealthChecks
                 {
                     await context.Response.WriteAsync("Hello World!");
                 });
-                endpoints.MapHealthChecks("/health");
+                
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions
+                    {
+                        Predicate = _ => true,
+                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                    });
             });
         }
     }
