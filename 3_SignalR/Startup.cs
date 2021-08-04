@@ -7,9 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
 
-namespace _5_Caching
+namespace _2_Workers
 {
     public class Startup
     {
@@ -17,16 +16,10 @@ namespace _5_Caching
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-
-            // services.AddMemoryCache(); // LIVE objects
-
-            // services.AddDistributedMemoryCache(); // in memory, but only serializable
-
-            services.AddStackExchangeRedisCache(setup => { // redis, only serializable
-                setup.Configuration = "localhost:32768,abortConnect=False,syncTimeout=10000,connectTimeout=15000";
-                setup.InstanceName = "Sample";
-            }); 
+            services.AddSignalR();
+            services.AddHttpClient();
+            
+            services.AddHostedService<GenerateNewUserWorker>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,11 +30,14 @@ namespace _5_Caching
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
+            app.UseEndpoints(configure =>
             {
-                endpoints.MapControllers();
+                configure.MapHub<SyncHub>("/hubs/sync");
             });
         }
     }

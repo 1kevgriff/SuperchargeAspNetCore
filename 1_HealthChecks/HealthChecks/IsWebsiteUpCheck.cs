@@ -7,11 +7,11 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 public class IsWebsiteUpCheck : IHealthCheck
 {
-    private readonly HttpClient client;
+    private readonly HttpClient _client;
 
     public IsWebsiteUpCheck(HttpClient client)
     {
-        this.client = client;
+        this._client = client;
     }
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
@@ -19,7 +19,7 @@ public class IsWebsiteUpCheck : IHealthCheck
         var stopWatch = new Stopwatch();
 
         stopWatch.Start();
-        var response = await client.GetAsync(url);
+        var response = await _client.GetAsync(url);
         stopWatch.Stop();
 
         if (response.IsSuccessStatusCode && stopWatch.ElapsedMilliseconds < 2000)

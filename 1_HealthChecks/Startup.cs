@@ -22,7 +22,7 @@ namespace _1_HealthChecks
 
             services
                 .AddHealthChecks()
-                .AddSqlServer("Server=.;Database=demoDatabase;Trusted_Connection=True;")
+                .AddSqlServer("Server=.;Database=PersonDemoDatabase;Trusted_Connection=True;")
                 .AddCheck<IsWebsiteUpCheck>("is_website_up");
         }
 
