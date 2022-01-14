@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 
 [ApiController]
-public class PiController : Controller
+public class PiController : Microsoft.AspNetCore.Mvc.Controller
 {
     private readonly IDistributedCache _cache;
 
