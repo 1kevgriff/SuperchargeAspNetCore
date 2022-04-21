@@ -32,7 +32,9 @@ public class GenerateNewUserWorker : BackgroundService
             while (!stoppingToken.IsCancellationRequested)
             {
                 var r = await GetUser();
-                await _hubContext.Clients.Group("notify-me").SendAsync("newUser", r.Results.First(), stoppingToken);
+                await _hubContext.Clients
+                    .Group("notify-me")
+                    .SendAsync("newUser", r.Results.First(), stoppingToken);
                 _logger.LogInformation($"New user: {r.Results.First().Name.First} {r.Results.First().Name.Last}");
 
                 await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
